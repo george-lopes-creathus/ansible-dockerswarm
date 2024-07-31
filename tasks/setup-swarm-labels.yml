@@ -1,10 +1,14 @@
 ---
 
+- name: Extract hostname from FQDN
+  set_fact:
+    hostname: "{{ ansible_fqdn.split('.')[0] }}"
+
 - name: Get list of labels.
-  command: >-
-         docker inspect
-         --format {% raw %}'{{ range $key, $value := .Spec.Labels }}{{ printf "%s\n" $key }}{{ end }}'{% endraw %}
-         {{ ansible_fqdn|lower }}
+  command: >
+          docker inspect
+          --format {% raw %}'{{ range $key, $value := .Spec.Labels }}{{ printf "%s\n" $key }}{{ end }}'{% endraw %}
+          {{ hostname }}
   register: docker_swarm_labels
   changed_when: false
   delegate_to: "{{ groups['docker_swarm_manager'][0] }}"
